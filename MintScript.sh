@@ -103,26 +103,26 @@ clear
 
 #Changes user passwords to a more secure password and sets password policies + locks accounts
 
-while IFS=: read -r username _ uid _
-do 
-	if [[ $uid -ge 1000 && $uid -ne 65534 ]] && [[ "$username" != "$USER" ]]
-	then 
-		echo Make custom password for $username? Y/N
-		read yn								
-		if [ "$yn" == "Y" ]
-		then
-			echo Password:
-			read pw
-			echo -e "$pw\n$pw" | passwd $username
-			printTime "$username has been given the password '$pw'."
-		else
-			echo -e "Moodle!22\nMoodle!22" | passwd $username
-			printTime "$username  has been given the password 'Moodle!22'."
-		fi
-		passwd -x30 -n3 -w7 $username
-		usermod -L $username
-		printTime "$username's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. $username's account has been locked."
-	fi
+#while IFS=: read -r username _ uid _
+#do 
+	#if [[ $uid -ge 1000 && $uid -ne 65534 ]] && [[ "$username" != "$USER" ]]
+	#then 
+		#echo Make custom password for $username? Y/N
+		#read yn								
+		#if [ "$yn" == "Y" ]
+		#then
+			#echo Password:
+			#read pw
+			#echo -e "$pw\n$pw" | passwd $username
+			#printTime "$username has been given the password '$pw'."
+		#else
+			#echo -e "Moodle!22\nMoodle!22" | passwd $username
+			#printTime "$username  has been given the password 'Moodle!22'."
+		#fi
+		#passwd -x30 -n3 -w7 $username
+		#usermod -L $username
+		#printTime "$username's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. $username's account has been locked."
+	#fi
 done < /etc/passwd 
 clear
 
@@ -153,8 +153,7 @@ do
 	fi
 	
 	passwd -x30 -n3 -w7 $user1
-	usermod -L $user1
-	printTime "$user1's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. $user1's account has been locked."
+	printTime "$user1's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days."
 done
 
 #checks the critical services of the device
@@ -186,9 +185,9 @@ unalias -a
 printTime "All alias have been removed."
 
 #Locks the root account
-clear
-usermod -L root
-printTime "Root account has been locked."
+#clear
+#usermod -L root
+#printTime "Root account has been locked."
 
 #Sets file perms 
 
@@ -235,14 +234,14 @@ echo -e "127.0.0.1 localhost\n127.0.1.1 $USER\n::1 ip6-localhost ip6-loopback\nf
 chmod 644 /etc/hosts
 printTime "HOSTS file has been set to defaults."
 
-clear
-echo > /etc/mdm/mdm.conf
-echo -e "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=$USER\nTimedLoginEnable=true\nTimedLogin=$USER\nTimedLoginDelay=10\n\n[security]\nAllowRoot=false\n\n[xdmcp]\n\n[gui]\n\n[greeter]\n\n[chooser]\n\n[debug]\n\n\[servers]" >> /etc/mdm/mdm.conf
-printTime "MDM has been secured."
+#clear
+#echo > /etc/mdm/mdm.conf
+#echo -e "[daemon]\nAutomaticLoginEnable=true\nAutomaticLogin=$USER\nTimedLoginEnable=true\nTimedLogin=$USER\nTimedLoginDelay=10\n\n[security]\nAllowRoot=false\n\n[xdmcp]\n\n[gui]\n\n[greeter]\n\n[chooser]\n\n[debug]\n\n\[servers]" >> /etc/mdm/mdm.conf
+#printTime "MDM has been secured."
 
-clear
-find /bin/ -name "*.sh" -type f -delete
-printTime "Scripts in bin have been removed."
+#clear
+#find /bin/ -name "*.sh" -type f -delete
+#printTime "Scripts in bin have been removed."
 
 
 clear
@@ -283,7 +282,7 @@ then
 	ufw allow ftps
 	cp /etc/vsftpd/vsftpd.conf ~/Desktop/backups/
 	cp /etc/vsftpd.conf ~/Desktop/backups/
-	gedit /etc/vsftpd/vsftpd.conf&gedit /etc/vsftpd.conf
+	gedit /etc/vsftpd.conf
 	service vsftpd restart
 	printTime "ftp, sftp, saft, ftps-data, and ftps ports have been allowed on the firewall. vsFTPd service has been restarted."
 else
@@ -481,68 +480,68 @@ printTime "DNS is complete."
 clear
 if [[ "$mediaFilesYN" == "N" ]]
 then
-	find / -name "*.midi" -type f -delete
-	find / -name "*.mid" -type f -delete
-	find / -name "*.mod" -type f -delete
-	find / -name "*.mp3" -type f -delete
-	find / -name "*.mp2" -type f -delete
-	find / -name "*.mpa" -type f -delete
-	find / -name "*.abs" -type f -delete
-	find / -name "*.mpega" -type f -delete
-	find / -name "*.au" -type f -delete
-	find / -name "*.snd" -type f -delete
-	find / -name "*.wav" -type f -delete
-	find / -name "*.aiff" -type f -delete
-	find / -name "*.aif" -type f -delete
-	find / -name "*.sid" -type f -delete
-	find / -name "*.flac" -type f -delete
-	find / -name "*.ogg" -type f -delete
+	#find /home -name "*.midi" -type f -delete
+	#find /home -name "*.mid" -type f -delete
+	find /home -name "*.mod" -type f -delete
+	find /home -name "*.mp3" -type f -delete
+	find /home -name "*.mp2" -type f -delete
+	find /home -name "*.mpa" -type f -delete
+	find /home -name "*.abs" -type f -delete
+	find /home -name "*.mpega" -type f -delete
+	#find /home -name "*.au" -type f -delete
+	find /home -name "*.snd" -type f -delete
+	find /home -name "*.wav" -type f -delete
+	find /home -name "*.aiff" -type f -delete
+	find /home -name "*.aif" -type f -delete
+	find /home -name "*.sid" -type f -delete
+	find /home -name "*.flac" -type f -delete
+	find /home -name "*.ogg" -type f -delete
 	clear
 	printTime "Audio files removed."
 
-	find / -name "*.mpeg" -type f -delete
-	find / -name "*.mpg" -type f -delete
-	find / -name "*.mpe" -type f -delete
-	find / -name "*.dl" -type f -delete
-	find / -name "*.movie" -type f -delete
-	find / -name "*.movi" -type f -delete
-	find / -name "*.mv" -type f -delete
-	find / -name "*.iff" -type f -delete
-	find / -name "*.anim5" -type f -delete
-	find / -name "*.anim3" -type f -delete
-	find / -name "*.anim7" -type f -delete
-	find / -name "*.avi" -type f -delete
-	find / -name "*.vfw" -type f -delete
-	find / -name "*.avx" -type f -delete
-	find / -name "*.fli" -type f -delete
-	find / -name "*.flc" -type f -delete
-	find / -name "*.mov" -type f -delete
-	find / -name "*.qt" -type f -delete
-	find / -name "*.spl" -type f -delete
-	find / -name "*.swf" -type f -delete
-	find / -name "*.dcr" -type f -delete
-	find / -name "*.dir" -type f -delete
-	find / -name "*.dxr" -type f -delete
-	find / -name "*.rpm" -type f -delete
-	find / -name "*.rm" -type f -delete
-	find / -name "*.smi" -type f -delete
-	find / -name "*.ra" -type f -delete
-	find / -name "*.ram" -type f -delete
-	find / -name "*.rv" -type f -delete
-	find / -name "*.wmv" -type f -delete
-	find / -name "*.asf" -type f -delete
-	find / -name "*.asx" -type f -delete
-	find / -name "*.wma" -type f -delete
-	find / -name "*.wax" -type f -delete
-	find / -name "*.wmv" -type f -delete
-	find / -name "*.wmx" -type f -delete
-	find / -name "*.3gp" -type f -delete
-	find / -name "*.mov" -type f -delete
-	find / -name "*.mp4" -type f -delete
-	find / -name "*.avi" -type f -delete
-	find / -name "*.swf" -type f -delete
-	find / -name "*.flv" -type f -delete
-	find / -name "*.m4v" -type f -delete
+	find /home -name "*.mpeg" -type f -delete
+	find /home -name "*.mpg" -type f -delete
+	find /home -name "*.mpe" -type f -delete
+	find /home -name "*.dl" -type f -delete
+	find /home -name "*.movie" -type f -delete
+	find /home -name "*.movi" -type f -delete
+	find /home -name "*.mv" -type f -delete
+	find /home -name "*.iff" -type f -delete
+	find /home -name "*.anim5" -type f -delete
+	find /home -name "*.anim3" -type f -delete
+	find /home -name "*.anim7" -type f -delete
+	find /home -name "*.avi" -type f -delete
+	find /home -name "*.vfw" -type f -delete
+	find /home -name "*.avx" -type f -delete
+	find /home -name "*.fli" -type f -delete
+	find /home -name "*.flc" -type f -delete
+	find /home -name "*.mov" -type f -delete
+	find /home -name "*.qt" -type f -delete
+	find /home -name "*.spl" -type f -delete
+	find /home -name "*.swf" -type f -delete
+	find /home -name "*.dcr" -type f -delete
+	find /home -name "*.dir" -type f -delete
+	find /home -name "*.dxr" -type f -delete
+	find /home -name "*.rpm" -type f -delete
+	find /home -name "*.rm" -type f -delete
+	find /home -name "*.smi" -type f -delete
+	find /home -name "*.ra" -type f -delete
+	find /home -name "*.ram" -type f -delete
+	find /home -name "*.rv" -type f -delete
+	find /home -name "*.wmv" -type f -delete
+	find /home -name "*.asf" -type f -delete
+	find /home -name "*.asx" -type f -delete
+	find /home -name "*.wma" -type f -delete
+	find /home -name "*.wax" -type f -delete
+	find /home -name "*.wmv" -type f -delete
+	find /home -name "*.wmx" -type f -delete
+	find /home -name "*.3gp" -type f -delete
+	find /home -name "*.mov" -type f -delete
+	find /home -name "*.mp4" -type f -delete
+	find /home -name "*.avi" -type f -delete
+	find /home -name "*.swf" -type f -delete
+	find /home -name "*.flv" -type f -delete
+	find /home -name "*.m4v" -type f -delete
 	clear
 	printTime "Video files removed."
 	
