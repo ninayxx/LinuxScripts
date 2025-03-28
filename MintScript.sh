@@ -1,8 +1,8 @@
 #!/bin/bash
 clear
-echo "Created by Matthew Bierman, Lightning McQueens, Faith Lutheran Middle & High School, Las Vegas, NV, USA"
-echo "Last Modified on Friday, January 19th, 2016, 2:13pm"
 echo "Linux Mint Script"
+
+#prints the time elapsed since the start of the script and logs it into /Desktop/Script.log
 startTime=$(date +"%s")
 printTime()
 {
@@ -26,10 +26,12 @@ printTime()
 	fi
 }
 
+#/Desktop/Script.log file used to store outputs that need manual reviewing
 touch ~/Desktop/Script.log
 echo > ~/Desktop/Script.log
 chmod 777 ~/Desktop/Script.log
 
+#Ensures script is run as root 
 if [[ $EUID -ne 0 ]]
 then
   echo This script must be run as root
@@ -37,14 +39,17 @@ then
 fi
 printTime "Script is being run as root."
 
+#Installs gedit text editor 
 apt-get install gedit -y -qq
 clear
 printTime "The current OS is Linux Mint."
 
+#Creates a backup directory under Desktop for backup files 
 mkdir -p ~/Desktop/backups
 chmod 777 ~/Desktop/backups
 printTime "Backups folder created on the Desktop."
 
+#Backs up /etc/group and /etc/passwd
 cp /etc/group ~/Desktop/backups/
 chmod 777 ~/Desktop/backups/group
 cp /etc/passwd ~/Desktop/backups/
@@ -52,88 +57,107 @@ chmod 777 ~/Desktop/backups/passwd
 
 printTime "/etc/group and /etc/passwd files backed up."
 
-echo Type all user account names, with a space in between
+#Deletes unauthorized users and fake roots 
+
+echo Enter authorized user account names
 read -a users
 
-usersLength=${#users[@]}	
+bashUsers=($(grep "/bin/bash" /etc/passwd | cut -d: -f1))
 
-for (( i=0;i<$usersLength;i++))
-do
-	clear
-	echo ${users[${i}]}
-	echo Delete ${users[${i}]}? yes or no
-	read yn1
-	if [ $yn1 == yes ]
-	then
-		userdel -r ${users[${i}]}
-		printTime "${users[${i}]} has been deleted."
-	else	
-		echo Make ${users[${i}]} administrator? yes or no
-		read yn2								
-		if [ $yn2 == yes ]
+for user in "${bashUsers[@]}"
+do 
+	if [[ "$user" != "root" ]] && ! printf '%s\n' "${users[@]}" | grep -q "^$user"
 		then
+			userdel -r "$user"
+			printTime "$user has been deleted"
+	fi
+done 
+clear 
+
+#Removes unauthorized administrators/adds authorized administrators
+
+echo Enter authorized administrators
+read -a administrators 
+
+sudoMembers=$(grep "^sudo:" /etc/group | cut -d: -f4 | tr ',' ' ')
+
+for admin in $sudoMembers
+do 
+	if ! printf '%s\n' "${administrators[@]}" | grep -q "^$admin"
+	then
+			gpasswd -d "$admin" sudo
+			gpasswd -d "$admin" adm
+			gpasswd -d "$admin" lpadmin
+			gpasswd -d "$admin" sambashare
+			gpasswd -d "$admin" root
+			printTime "$admin has been removed from the administrator group."
+	else 
 			gpasswd -a ${users[${i}]} sudo
 			gpasswd -a ${users[${i}]} adm
 			gpasswd -a ${users[${i}]} lpadmin
 			gpasswd -a ${users[${i}]} sambashare
-			printTime "${users[${i}]} has been made an administrator."
-		else
-			gpasswd -d ${users[${i}]} sudo
-			gpasswd -d ${users[${i}]} adm
-			gpasswd -d ${users[${i}]} lpadmin
-			gpasswd -d ${users[${i}]} sambashare
-			gpasswd -d ${users[${i}]} root
-			printTime "${users[${i}]} has been made a standard user."
-		fi
-		
-		echo Make custom password for ${users[${i}]}? yes or no
-		read yn3								
-		if [ $yn3 == yes ]
+			printTime "$admin has been added to the administrator group."
+	fi 
+done
+clear 
+
+#Changes user passwords to a more secure password and sets password policies + locks accounts
+
+while IFS=: read -r username _ uid _
+do 
+	if [[ $uid -ge 1000 && $uid -ne 65534 ]] && [[ "$username" != "$USER" ]]
+	then 
+		echo Make custom password for $username? Y/N
+		read yn								
+		if [ "$yn" == "Y" ]
 		then
 			echo Password:
 			read pw
-			echo -e "$pw\n$pw" | passwd ${users[${i}]}
-			printTime "${users[${i}]} has been given the password '$pw'."
+			echo -e "$pw\n$pw" | passwd $username
+			printTime "$username has been given the password '$pw'."
 		else
-			echo -e "Moodle!22\nMoodle!22" | passwd ${users[${i}]}
-			printTime "${users[${i}]} has been given the password 'Moodle!22'."
+			echo -e "Moodle!22\nMoodle!22" | passwd $username
+			printTime "$username  has been given the password 'Moodle!22'."
 		fi
-		passwd -x30 -n3 -w7 ${users[${i}]}
-		usermod -L ${users[${i}]}
-		printTime "${users[${i}]}'s password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. ${users[${i}]}'s account has been locked."
+		passwd -x30 -n3 -w7 $username
+		usermod -L $username
+		printTime "$username's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. $username's account has been locked."
 	fi
-done
+done < /etc/passwd 
 clear
 
-echo Type user account names of users you want to add, with a space in between
+#Adds new users 
+
+echo Enter users you want to add
 read -a usersNew
 
-usersNewLength=${#usersNew[@]}	
-
-for (( i=0;i<$usersNewLength;i++))
+for user1 in "${usersNew[@]}"
 do
 	clear
-	echo ${usersNew[${i}]}
-	adduser ${usersNew[${i}]}
-	printTime "A user account for ${usersNew[${i}]} has been created."
+	echo $user1
+	adduser $user1
+	printTime "A user account for $user1 has been created."
+	
 	clear
-	echo Make ${usersNew[${i}]} administrator? yes or no
+	echo Make $user1 administrator? Y/N
 	read ynNew								
-	if [ $ynNew == yes ]
+	if [[ "$ynNew" == "Y" ]]
 	then
-		gpasswd -a ${usersNew[${i}]} sudo
-		gpasswd -a ${usersNew[${i}]} adm
-		gpasswd -a ${usersNew[${i}]} lpadmin
-		gpasswd -a ${usersNew[${i}]} sambashare
-		printTime "${usersNew[${i}]} has been made an administrator."
+		gpasswd -a $user1 sudo
+		gpasswd -a $user1 adm
+		gpasswd -a $user1 lpadmin
+		gpasswd -a $user1 sambashare
+		printTime "$user1 has been made an administrator."
 	else
-		printTime "${usersNew[${i}]} has been made a standard user."
+		printTime "$user1 is a standard user."
 	fi
 	
-	passwd -x30 -n3 -w7 ${usersNew[${i}]}
-	usermod -L ${usersNew[${i}]}
-	printTime "${usersNew[${i}]}'s password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. ${users[${i}]}'s account has been locked."
+	passwd -x30 -n3 -w7 $user1
+	usermod -L $user1
+	printTime "$user1's password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. $user1's account has been locked."
 done
+
+#checks the critical services of the device
 
 echo Does this machine need Samba?
 read sambaYN
@@ -156,21 +180,29 @@ read dnsYN
 echo Does this machine allow media files?
 read mediaFilesYN
 
+#Removes all aliases 
 clear
 unalias -a
 printTime "All alias have been removed."
 
+#Locks the root account
 clear
 usermod -L root
 printTime "Root account has been locked."
+
+#Sets file perms 
 
 clear
 chmod 640 .bash_history
 printTime "Bash history file permissions set."
 
 clear
-chmod 604 /etc/shadow
+chmod 600 /etc/shadow
 printTime "Read/Write permissions on shadow have been set."
+
+clear
+chmod 644 /etc/passwd
+printTime "Read/Write permissions on passwd have been set."
 
 clear
 printTime "Check for any user folders that do not belong to any users."
@@ -180,12 +212,15 @@ clear
 printTime "Check for any files for users that should not be administrators."
 ls -a /etc/sudoers.d >> ~/Desktop/Script.log
 
+#Deletes scripts from rc.local
+
 clear
 cp /etc/rc.local ~/Desktop/backups/
 echo > /etc/rc.local
 echo 'exit 0' >> /etc/rc.local
 printTime "Any startup scripts have been removed."
 
+#Enables firewall
 clear
 apt-get install ufw -y -qq
 ufw enable
@@ -210,9 +245,8 @@ find /bin/ -name "*.sh" -type f -delete
 printTime "Scripts in bin have been removed."
 
 
-
 clear
-if [ $sambaYN == no ]
+if [[ "$sambaYN" == "N" ]]
 then
 	apt-get purge samba -y -qq
 	apt-get purge samba-common -y  -qq
@@ -220,7 +254,7 @@ then
 	apt-get purge samba4 -y -qq
 	clear
 	printTime "Samba has been removed."
-elif [ $sambaYN == yes ]
+elif [[ "$sambaYN" == "Y" ]]
 then
 	echo CREATE SEPARATE PASSWORDS FOR EACH USER
 	cp /etc/samba/smb.conf ~/Desktop/backups/
@@ -231,7 +265,7 @@ fi
 printTime "Samba is complete."
 
 clear
-if [ $ftpYN == no ]
+if [[ "$ftpYN" == "N" ]]
 then
 	ufw deny ftp 
 	ufw deny sftp 
@@ -240,7 +274,7 @@ then
 	ufw deny ftps
 	apt-get purge vsftpd -y -qq
 	printTime "vsFTPd has been removed. ftp, sftp, saft, ftps-data, and ftps ports have been denied on the firewall."
-elif [ $ftpYN == yes ]
+elif [[ "$ftpYN" == "Y" ]]
 then
 	ufw allow ftp 
 	ufw allow sftp 
@@ -259,35 +293,35 @@ printTime "FTP is complete."
 
 
 clear
-if [ $sshYN == no ]
+if [[ "$sshYN" == "N" ]]
 then
 	ufw deny ssh
 	apt-get purge openssh-server -y -qq
 	printTime "SSH port has been denied on the firewall. Open-SSH has been removed."
-elif [ $sshYN == yes ]
+elif [[ "$sshYN" == "Y" ]]
 then
 	ufw allow ssh
 	cp /etc/ssh/sshd_config ~/Desktop/backups/	
 	grep PermitRootLogin /etc/ssh/sshd_config | grep yes
-	if [ $?==0 ]
+	if [[ $? -eq 0 ]]
 	then
   	  sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
 	  sed -i 's/PermitRootLogin without-password/PermitRootLogin no/g' /etc/ssh/sshd_config
 
 	fi
 	grep Protocol /etc/ssh/sshd_config | grep 1
-	if [ $?==0 ]
+	if [[ $? -eq 0 ]]
 	then
 	  sed -i 's/Protocol 2,1/Protocol 2/g' /etc/ssh/sshd_config
 	  sed -i 's/Protocol 1,2/Protocol 2/g' /etc/ssh/sshd_config
 	fi
 	grep X11Forwarding /etc/ssh/sshd_config | grep yes
-	if [ $?==0 ]
+	if [[ $? -eq 0 ]]
 	then
 	  sed -i 's/X11Forwarding yes/X11Forwarding no/g' /etc/ssh/sshd_config
 	fi
 	grep PermitEmptyPasswords /etc/ssh/sshd_config | grep yes
-	if [ $?==0 ]
+	if [[ $? -eq 0 ]]
 	then
 	  sed -i 's/PermitEmptyPasswords yes/PermitEmptyPasswords no/g' /etc/ssh/sshd_config
 	fi
@@ -299,7 +333,7 @@ fi
 printTime "SSH is complete."
 
 clear
-if [ $telnetYN == no ]
+if [[ "$telnetYN" == "N" ]]
 then
 	ufw deny telnet 
 	ufw deny rtelnet 
@@ -309,7 +343,7 @@ then
 	apt-get inetutils-telnetd -y -qq
 	apt-get telnetd-ssl -y -qq
 	printTime "Telnet port has been denied on the firewall and Telnet has been removed."
-elif [ $telnetYN == yes ]
+elif [[ "$telnetYN" == "Y" ]]
 then
 	ufw allow telnet 
 	ufw allow rtelnet 
@@ -323,7 +357,7 @@ printTime "Telnet is complete."
 
 
 clear
-if [ $mailYN == no ]
+if [[ "$mailYN" == "N" ]]
 then
 	ufw deny smtp 
 	ufw deny pop2 
@@ -332,7 +366,7 @@ then
 	ufw deny imaps 
 	ufw deny pop3s
 	printTime "smtp, pop2, pop3, imap2, imaps, and pop3s ports have been denied on the firewall."
-elif [ $mailYN == yes ]
+elif [[ "$mailYN" == "Y" ]]
 then
 	ufw allow smtp 
 	ufw allow pop2 
@@ -349,13 +383,13 @@ printTime "Mail is complete."
 
 
 clear
-if [ $printYN == no ]
+if [[ "$printYN" == "N" ]]
 then
 	ufw deny ipp 
 	ufw deny printer 
 	ufw deny cups
 	printTime "ipp, printer, and cups ports have been denied on the firewall."
-elif [ $printYN == yes ]
+elif [[ "$printYN" == "Y" ]]
 then
 	ufw allow ipp 
 	ufw allow printer 
@@ -369,7 +403,7 @@ printTime "Printing is complete."
 
 
 clear
-if [ $dbYN == no ]
+if [[ "$dbYN" == "N" ]]
 then
 	ufw deny ms-sql-s 
 	ufw deny ms-sql-m 
@@ -381,7 +415,7 @@ then
 	apt-get purge mysql-server-5.5 -y -qq
 	apt-get purge mysql-client-5.5 -y -qq
 	printTime "ms-sql-s, ms-sql-m, mysql, and mysql-proxy ports have been denied on the firewall. MySQL has been removed."
-elif [ $dbYN == yes ]
+elif [[ "$dbYN" == "Y" ]]
 then
 	ufw allow ms-sql-s 
 	ufw allow ms-sql-m 
@@ -402,14 +436,14 @@ printTime "MySQL is complete."
 
 
 clear
-if [ $httpYN == no ]
+if [[ "$httpYN" == "N" ]]
 then
 	ufw deny http
 	ufw deny https
 	apt-get purge apache2 -y -qq
 	rm -r /var/www/*
 	printTime "http and https ports have been denied on the firewall. Apache2 has been removed. Web server files have been removed."
-elif [ $httpYN == yes ]
+elif [[ "$httpYN" == "Y" ]]
 then
 	ufw allow http 
 	ufw allow https
@@ -427,14 +461,13 @@ fi
 printTime "Web Server is complete."
 
 
-
 clear
-if [ $dnsYN == no ]
+if [[ "$dnsYN" == "N" ]]
 then
 	ufw deny domain
 	apt-get purge bind9 -qq
 	printTime "domain port has been denied on the firewall. DNS name binding has been removed."
-elif [ $dnsYN == yes ]
+elif [[ "$dnsYN" == "Y" ]]
 then
 	ufw allow domain
 	printTime "domain port has been allowed on the firewall."
@@ -443,9 +476,10 @@ else
 fi
 printTime "DNS is complete."
 
+#Removes all unauthorized files (media files, etc.)
 
 clear
-if [ $mediaFilesYN == no ]
+if [[ "$mediaFilesYN" == "N" ]]
 then
 	find / -name "*.midi" -type f -delete
 	find / -name "*.mid" -type f -delete
@@ -541,6 +575,7 @@ else
 fi
 printTime "Media files are complete."
 
+#Deletes all malicious packages 
 
 clear
 apt-get purge netcat -y -qq
@@ -555,6 +590,10 @@ apt-get purge sbd -y -qq
 rm /usr/bin/nc
 clear
 printTime "Netcat and all other instances have been removed."
+
+apt-get purge 4g8 -y -qq
+clear 
+printTime "4G8 has been removed."
 
 apt-get purge john -y -qq
 apt-get purge john-data -y -qq
@@ -614,11 +653,15 @@ apt-get purge rhythmbox-plugin-zeitgeist -y -qq
 apt-get purge zeitgeist -y -qq
 printTime "Zeitgeist has been removed."
 
+#Sets configs for /etc/login.defs 
+
 cp /etc/login.defs ~/Desktop/backups/
 sed -i '160s/.*/PASS_MAX_DAYS\o01130/' /etc/login.defs
 sed -i '161s/.*/PASS_MIN_DAYS\o0113/' /etc/login.defs
 sed -i '162s/.*/PASS_MIN_LEN\o0118/' /etc/login.defs
 sed -i '163s/.*/PASS_WARN_AGE\o0117/' /etc/login.defs
+
+#PAM configs 
 
 clear
 apt-get install libpam-cracklib -y -qq
@@ -683,6 +726,7 @@ fi
 chmod 644 /etc/apt/sources.list
 printTime "Apt Repositories have been added."
 
+#Updates Linux Mint OS
 
 clear
 apt-get update -qq
@@ -696,6 +740,8 @@ cp /etc/apt/apt.conf.d/10periodic ~/Desktop/backups/
 echo -e "APT::Periodic::Update-Package-Lists \"1\";\nAPT::Periodic::Download-Upgradeable-Packages \"1\";\nAPT::Periodic::AutocleanInterval \"1\";\nAPT::Periodic::Unattended-Upgrade \"1\";" > /etc/apt/apt.conf.d/10periodic
 chmod 644 /etc/apt/apt.conf.d/10periodic
 printTime "Daily update checks, download upgradeable packages, autoclean interval, and unattended upgrade enabled."
+
+#Removes unused packages 
 
 clear
 apt-get autoremove -y -qq
