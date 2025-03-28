@@ -491,79 +491,79 @@ then
 	#find /home -name "*.au" -type f -delete
 	find /home -name "*.snd" -type f -delete
 	find /home -name "*.wav" -type f -delete
-	find /home -name "*.aiff" -type f -delete
-	find /home -name "*.aif" -type f -delete
-	find /home -name "*.sid" -type f -delete
-	find /home -name "*.flac" -type f -delete
-	find /home -name "*.ogg" -type f -delete
+	#find /home -name "*.aiff" -type f -delete
+	#find /home -name "*.aif" -type f -delete
+	#find /home -name "*.sid" -type f -delete
+	#find /home -name "*.flac" -type f -delete
+	#find /home -name "*.ogg" -type f -delete
 	clear
 	printTime "Audio files removed."
 
 	find /home -name "*.mpeg" -type f -delete
 	find /home -name "*.mpg" -type f -delete
 	find /home -name "*.mpe" -type f -delete
-	find /home -name "*.dl" -type f -delete
+	#find /home -name "*.dl" -type f -delete
 	find /home -name "*.movie" -type f -delete
 	find /home -name "*.movi" -type f -delete
 	find /home -name "*.mv" -type f -delete
-	find /home -name "*.iff" -type f -delete
-	find /home -name "*.anim5" -type f -delete
-	find /home -name "*.anim3" -type f -delete
-	find /home -name "*.anim7" -type f -delete
+	#find /home -name "*.iff" -type f -delete
+	#find /home -name "*.anim5" -type f -delete
+	#find /home -name "*.anim3" -type f -delete
+	#find /home -name "*.anim7" -type f -delete
 	find /home -name "*.avi" -type f -delete
-	find /home -name "*.vfw" -type f -delete
-	find /home -name "*.avx" -type f -delete
-	find /home -name "*.fli" -type f -delete
-	find /home -name "*.flc" -type f -delete
+	#find /home -name "*.vfw" -type f -delete
+	#find /home -name "*.avx" -type f -delete
+	#find /home -name "*.fli" -type f -delete
+	#find /home -name "*.flc" -type f -delete
 	find /home -name "*.mov" -type f -delete
-	find /home -name "*.qt" -type f -delete
-	find /home -name "*.spl" -type f -delete
-	find /home -name "*.swf" -type f -delete
-	find /home -name "*.dcr" -type f -delete
-	find /home -name "*.dir" -type f -delete
-	find /home -name "*.dxr" -type f -delete
-	find /home -name "*.rpm" -type f -delete
-	find /home -name "*.rm" -type f -delete
-	find /home -name "*.smi" -type f -delete
-	find /home -name "*.ra" -type f -delete
-	find /home -name "*.ram" -type f -delete
-	find /home -name "*.rv" -type f -delete
-	find /home -name "*.wmv" -type f -delete
-	find /home -name "*.asf" -type f -delete
-	find /home -name "*.asx" -type f -delete
-	find /home -name "*.wma" -type f -delete
-	find /home -name "*.wax" -type f -delete
-	find /home -name "*.wmv" -type f -delete
-	find /home -name "*.wmx" -type f -delete
-	find /home -name "*.3gp" -type f -delete
+	#find /home -name "*.qt" -type f -delete
+	#find /home -name "*.spl" -type f -delete
+	#find /home -name "*.swf" -type f -delete
+	#find /home -name "*.dcr" -type f -delete
+	#find /home -name "*.dir" -type f -delete
+	#find /home -name "*.dxr" -type f -delete
+	#find /home -name "*.rpm" -type f -delete
+	#find /home -name "*.rm" -type f -delete
+	#find /home -name "*.smi" -type f -delete
+	#find /home -name "*.ra" -type f -delete
+	#find /home -name "*.ram" -type f -delete
+	#find /home -name "*.rv" -type f -delete
+	#find /home -name "*.wmv" -type f -delete
+	#find /home -name "*.asf" -type f -delete
+	#find /home -name "*.asx" -type f -delete
+	#find /home -name "*.wma" -type f -delete
+	#find /home -name "*.wax" -type f -delete
+	#find /home -name "*.wmv" -type f -delete
+	#find /home -name "*.wmx" -type f -delete
+	#find /home -name "*.3gp" -type f -delete
 	find /home -name "*.mov" -type f -delete
 	find /home -name "*.mp4" -type f -delete
 	find /home -name "*.avi" -type f -delete
-	find /home -name "*.swf" -type f -delete
-	find /home -name "*.flv" -type f -delete
+	#find /home -name "*.swf" -type f -delete
+	#find /home -name "*.flv" -type f -delete
 	find /home -name "*.m4v" -type f -delete
 	clear
 	printTime "Video files removed."
 	
-	find /home -name "*.tiff" -type f -delete
-	find /home -name "*.tif" -type f -delete
-	find /home -name "*.rs" -type f -delete
-	find /home -name "*.im1" -type f -delete
+	#find /home -name "*.tiff" -type f -delete
+	#find /home -name "*.tif" -type f -delete
+	#find /home -name "*.rs" -type f -delete
+	#find /home -name "*.im1" -type f -delete
 	find /home -name "*.gif" -type f -delete
 	find /home -name "*.jpeg" -type f -delete
 	find /home -name "*.jpg" -type f -delete
 	find /home -name "*.jpe" -type f -delete
 	find /home -name "*.png" -type f -delete
-	find /home -name "*.rgb" -type f -delete
-	find /home -name "*.xwd" -type f -delete
-	find /home -name "*.xpm" -type f -delete
-	find /home -name "*.ppm" -type f -delete
-	find /home -name "*.pbm" -type f -delete
-	find /home -name "*.pgm" -type f -delete
-	find /home -name "*.pcx" -type f -delete
-	find /home -name "*.ico" -type f -delete
-	find /home -name "*.svg" -type f -delete
-	find /home -name "*.svgz" -type f -delete
+	#find /home -name "*.rgb" -type f -delete
+	#find /home -name "*.xwd" -type f -delete
+	#find /home -name "*.xpm" -type f -delete
+	#find /home -name "*.ppm" -type f -delete
+	#find /home -name "*.pbm" -type f -delete
+	#find /home -name "*.pgm" -type f -delete
+	#find /home -name "*.pcx" -type f -delete
+	#find /home -name "*.ico" -type f -delete
+	#find /home -name "*.svg" -type f -delete
+	#find /home -name "*.svgz" -type f -delete
 	clear
 	printTime "Image files removed."
 	
@@ -663,14 +663,14 @@ sed -i '163s/.*/PASS_WARN_AGE\o0117/' /etc/login.defs
 #PAM configs 
 
 clear
-apt-get install libpam-cracklib -y -qq
+apt-get install libpam-pwquality -y -qq
 cp /etc/pam.d/common-auth ~/Desktop/backups/
 cp /etc/pam.d/common-password ~/Desktop/backups/
 grep "auth optional pam_tally.so deny=5 unlock_time=900 onerr=fail audit even_deny_root_account silent " /etc/pam.d/common-auth
 if [ "$?" -eq "1" ]
 then	
 	echo "auth optional pam_tally.so deny=5 unlock_time=900 onerr=fail audit even_deny_root_account silent " >> /etc/pam.d/common-auth
-	echo -e "password requisite pam_cracklib.so retry=3 minlen=8 difok=3 reject_username minclass=3 maxrepeat=2 dcredit=1 ucredit=1 lcredit=1 ocredit=1\npassword requisite pam_pwhistory.so use_authtok remember=24 enforce_for_root" >>  /etc/pam.d/common-password
+	echo -e "password requisite pam_pwquality.so retry=3 minlen=8 difok=3 reject_username minclass=3 maxrepeat=2 dcredit=1 ucredit=1 lcredit=1 ocredit=1\npassword requisite pam_pwhistory.so use_authtok remember=24 enforce_for_root" >>  /etc/pam.d/common-password
 fi
 printTime "Password policies have been set, editing /etc/login.defs and pam.d."
 
