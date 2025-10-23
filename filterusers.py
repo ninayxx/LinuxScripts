@@ -11,8 +11,8 @@ with open("/etc/passwd","r") as file:
 
     for user in users:
         username = user.split(":")[0].strip()
-        if username not in auth_users and user.split(":")[6].strip()=="/bin/bash" and user.split(":")[3] != 0:
-            os.system(f"userdel -r {username}") 
+        if username not in auth_users and user.split(":")[6].strip()=="/bin/bash" and user.split(":")[3] != "0":
+            os.system(f"userdel -r {username} 2> /dev/null") 
 
         
 
